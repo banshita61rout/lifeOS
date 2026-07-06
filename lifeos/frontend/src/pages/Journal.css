@@ -1,0 +1,6 @@
+.journal-toolbar { display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
+.journal-entry { padding: 18px; margin-bottom: 14px; }
+.journal-entry-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.mood-emoji { font-size: 20px; }
+.journal-images { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+.journal-images img { width: 70px; height: 70px; object-fit: cover; border-radius: 8px; }

@@ -1,0 +1,7 @@
+.calendar-wrapper { padding: 20px; }
+.fc { font-family: "Inter", sans-serif; }
+.fc-theme-standard td, .fc-theme-standard th { border-color: var(--border) !important; }
+.fc-toolbar-title { color: var(--text) !important; font-family: "Poppins", sans-serif; }
+.fc-button { background: var(--primary) !important; border: none !important; }
+.fc-daygrid-day-number, .fc-col-header-cell-cushion { color: var(--text) !important; }
+.fc-day-today { background: rgba(124,92,255,0.08) !important; }

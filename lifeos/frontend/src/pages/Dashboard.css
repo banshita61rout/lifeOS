@@ -1,0 +1,39 @@
+.dash-grid { margin-bottom: 20px; }
+.dash-card { padding: 20px; }
+.dash-card h3 { font-size: 15px; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+.greeting-card {
+  padding: 26px;
+  margin-bottom: 20px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white;
+}
+.greeting-card h1 { font-size: 26px; margin-bottom: 4px; }
+.greeting-card p { opacity: 0.9; }
+.stat-row { display: flex; gap: 14px; margin-top: 16px; flex-wrap: wrap; }
+.stat-pill {
+  background: rgba(255,255,255,0.18);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+.list-item:last-child { border-bottom: none; }
+.habit-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+.habit-chip .streak { margin-left: auto; font-weight: 700; color: var(--primary); }

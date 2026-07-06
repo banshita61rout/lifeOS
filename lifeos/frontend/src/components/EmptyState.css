@@ -1,0 +1,6 @@
+.empty-state {
+  text-align: center;
+  padding: 50px 20px;
+}
+.empty-icon { font-size: 42px; margin-bottom: 10px; }
+.empty-state h4 { margin-bottom: 6px; }

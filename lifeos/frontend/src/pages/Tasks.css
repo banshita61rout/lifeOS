@@ -1,0 +1,32 @@
+.task-toolbar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.task-toolbar input, .task-toolbar select { min-width: 140px; }
+.kanban { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.kanban-col { padding: 16px; min-height: 300px; }
+.kanban-col h4 { margin-bottom: 12px; display: flex; justify-content: space-between; }
+.task-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  margin-bottom: 10px;
+  cursor: grab;
+}
+.task-card h5 { font-size: 14px; margin-bottom: 6px; }
+.task-card-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; font-size: 12px; }
+.task-actions { display: flex; gap: 6px; margin-top: 8px; }
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+  display: flex; align-items: center; justify-content: center; z-index: 100;
+}
+.modal-content { width: 100%; max-width: 460px; padding: 26px; }
+.modal-content .auth-field { margin-bottom: 14px; }
+.modal-content label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+.modal-content input, .modal-content select, .modal-content textarea { width: 100%; }
+.modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px; }
+@media (max-width: 900px) { .kanban { grid-template-columns: 1fr; } }

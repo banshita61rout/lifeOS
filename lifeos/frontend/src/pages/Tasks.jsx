@@ -15,6 +15,11 @@ const columns = [
   { key: "done", label: "✅ Done" },
 ];
 
+// A task is overdue if it has a due date in the past and isn't done yet
+const isOverdue = (task) =>
+  task.dueDate &&
+  task.status !== "done" &&
+  new Date(task.dueDate) < new Date().setHours(0, 0, 0, 0);
 const Tasks = () => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -38,7 +43,9 @@ const Tasks = () => {
     }
   };
 
-  useEffect(() => { fetchTasks(); }, [search, priorityFilter]);
+  useEffect(() => {
+    fetchTasks();
+  }, [search, priorityFilter]);
 
   const onCreate = async (data) => {
     try {
@@ -55,7 +62,9 @@ const Tasks = () => {
   const moveTask = async (task, newStatus) => {
     try {
       await api.put(`/tasks/${task._id}`, { status: newStatus });
-      setTasks((prev) => prev.map((t) => (t._id === task._id ? { ...t, status: newStatus } : t)));
+      setTasks((prev) =>
+        prev.map((t) => (t._id === task._id ? { ...t, status: newStatus } : t)),
+      );
     } catch {
       toast.error("Failed to update task");
     }
@@ -75,14 +84,23 @@ const Tasks = () => {
     <AppLayout>
       <Navbar title="Task Manager" />
       <div className="task-toolbar">
-        <input placeholder="🔍 Search tasks..." value={search} onChange={(e) => setSearch(e.target.value)} />
-        <select value={priorityFilter} onChange={(e) => setPriorityFilter(e.target.value)}>
+        <input
+          placeholder="🔍 Search tasks..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <select
+          value={priorityFilter}
+          onChange={(e) => setPriorityFilter(e.target.value)}
+        >
           <option value="">All priorities</option>
           <option value="high">High</option>
           <option value="medium">Medium</option>
           <option value="low">Low</option>
         </select>
-        <button className="btn btn-primary" onClick={() => setShowModal(true)}>+ New Task</button>
+        <button className="btn btn-primary" onClick={() => setShowModal(true)}>
+          + New Task
+        </button>
       </div>
 
       {loading ? (
@@ -90,7 +108,9 @@ const Tasks = () => {
       ) : (
         <div className="kanban">
           {columns.map((col) => (
-            <div className="glass-card kanban-col" key={col.key}
+            <div
+              className="glass-card kanban-col"
+              key={col.key}
               onDragOver={(e) => e.preventDefault()}
               onDrop={(e) => {
                 const id = e.dataTransfer.getData("taskId");
@@ -98,33 +118,69 @@ const Tasks = () => {
                 if (task) moveTask(task, col.key);
               }}
             >
-              <h4>{col.label} <span className="text-muted">{tasks.filter((t) => t.status === col.key).length}</span></h4>
+              <h4>
+                {col.label}{" "}
+                <span className="text-muted">
+                  {tasks.filter((t) => t.status === col.key).length}
+                </span>
+              </h4>
               <AnimatePresence>
-                {tasks.filter((t) => t.status === col.key).length === 0 && <EmptyState title="Empty" icon="📭" />}
-                {tasks.filter((t) => t.status === col.key).map((t) => (
-                  <motion.div
-                    key={t._id}
-                    className="task-card"
-                    draggable
-                    onDragStart={(e) => e.dataTransfer.setData("taskId", t._id)}
-                    initial={{ opacity: 0, y: 6 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0 }}
-                  >
-                    <h5>{t.title}</h5>
-                    {t.dueDate && <div className="text-muted" style={{ fontSize: 12 }}>Due {new Date(t.dueDate).toLocaleDateString()}</div>}
-                    <div className="task-card-meta">
-                      <span className={`badge badge-${t.priority}`}>{t.priority}</span>
-                      <span className="text-muted">{t.category}</span>
-                    </div>
-                    <div className="task-actions">
-                      {columns.filter((c) => c.key !== t.status).map((c) => (
-                        <button key={c.key} className="btn btn-outline btn-sm" onClick={() => moveTask(t, c.key)}>{c.label.split(" ")[0]}</button>
-                      ))}
-                      <button className="btn btn-danger btn-sm" onClick={() => deleteTask(t._id)}>🗑️</button>
-                    </div>
-                  </motion.div>
-                ))}
+                {tasks.filter((t) => t.status === col.key).length === 0 && (
+                  <EmptyState title="Empty" icon="📭" />
+                )}
+                {tasks
+                  .filter((t) => t.status === col.key)
+                  .map((t) => (
+                    <motion.div
+                      key={t._id}
+                      className={`task-card${isOverdue(t) ? " overdue" : ""}`}
+                      draggable
+                      onDragStart={(e) =>
+                        e.dataTransfer.setData("taskId", t._id)
+                      }
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                    >
+                      <h5>{t.title}</h5>
+                      {t.dueDate && (
+                        <div
+                          className={
+                            isOverdue(t) ? "overdue-text" : "text-muted"
+                          }
+                          style={{ fontSize: 12 }}
+                        >
+                          {isOverdue(t) ? "⚠ Overdue — " : "Due "}
+                          {new Date(t.dueDate).toLocaleDateString()}
+                        </div>
+                      )}
+                      <div className="task-card-meta">
+                        <span className={`badge badge-${t.priority}`}>
+                          {t.priority}
+                        </span>
+                        <span className="text-muted">{t.category}</span>
+                      </div>
+                      <div className="task-actions">
+                        {columns
+                          .filter((c) => c.key !== t.status)
+                          .map((c) => (
+                            <button
+                              key={c.key}
+                              className="btn btn-outline btn-sm"
+                              onClick={() => moveTask(t, c.key)}
+                            >
+                              {c.label.split(" ")[0]}
+                            </button>
+                          ))}
+                        <button
+                          className="btn btn-danger btn-sm"
+                          onClick={() => deleteTask(t._id)}
+                        >
+                          🗑️
+                        </button>
+                      </div>
+                    </motion.div>
+                  ))}
               </AnimatePresence>
             </div>
           ))}
@@ -133,24 +189,37 @@ const Tasks = () => {
 
       {showModal && (
         <div className="modal-overlay" onClick={() => setShowModal(false)}>
-          <motion.div className="modal-content glass-card" onClick={(e) => e.stopPropagation()}
-            initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}>
+          <motion.div
+            className="modal-content glass-card"
+            onClick={(e) => e.stopPropagation()}
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+          >
             <h3 style={{ marginBottom: 16 }}>New Task</h3>
             <form onSubmit={handleSubmit(onCreate)}>
               <div className="auth-field">
                 <label>Title</label>
-                <input {...register("title", { required: true })} placeholder="Task title" />
+                <input
+                  {...register("title", { required: true })}
+                  placeholder="Task title"
+                />
               </div>
               <div className="auth-field">
                 <label>Description</label>
-                <textarea rows={3} {...register("description")} placeholder="Optional details" />
+                <textarea
+                  rows={3}
+                  {...register("description")}
+                  placeholder="Optional details"
+                />
               </div>
               <div className="grid grid-2">
                 <div className="auth-field">
                   <label>Priority</label>
                   <select {...register("priority")}>
                     <option value="low">Low</option>
-                    <option value="medium" selected>Medium</option>
+                    <option value="medium" selected>
+                      Medium
+                    </option>
                     <option value="high">High</option>
                   </select>
                 </div>
@@ -164,8 +233,16 @@ const Tasks = () => {
                 <input type="date" {...register("dueDate")} />
               </div>
               <div className="modal-actions">
-                <button type="button" className="btn btn-outline" onClick={() => setShowModal(false)}>Cancel</button>
-                <button type="submit" className="btn btn-primary">Create</button>
+                <button
+                  type="button"
+                  className="btn btn-outline"
+                  onClick={() => setShowModal(false)}
+                >
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-primary">
+                  Create
+                </button>
               </div>
             </form>
           </motion.div>
